@@ -17,6 +17,9 @@ public class BullsEyeTrigger : MonoBehaviour {
 	void Update () {
 		
 	}
+
+
+
     void OnTriggerEnter(Collider coll)
     {
 
