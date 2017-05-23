@@ -155,9 +155,9 @@ public class BulletController : MonoBehaviour
         if (col.gameObject.tag == "Ship")
         {
             if (bulletType == TypeBullet.Normal)  
-                GameManager.Instance.Ship.TakeDamage(9);
+                GameManager.Instance.Ship.GetComponent<ShipController>().TakeDamage(9);
             if (bulletType == TypeBullet.Fire)  
-                GameManager.Instance.Ship.TakeDamage(5);
+                GameManager.Instance.Ship.GetComponent<ShipController>().TakeDamage(5);
             Destroy(gameObject);
         }
         if(col.gameObject.tag=="Enemy")

@@ -16,6 +16,7 @@ public class LevelManager : MonoBehaviour {
     public void Awake()
     {
         Instance = this;
+        Ship = GameObject.Find("Ship");
     }
     public void Start()
     {
