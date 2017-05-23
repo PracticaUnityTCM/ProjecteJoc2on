@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TrailBoatEffect : MonoBehaviour {
     public ParticleSystem PS;
-    private float forceOverLifeTime;
+    public float forceOverLifeTime;
 	// Use this for initialization
 	void Start () {
         PS=GetComponentInChildren<ParticleSystem>();

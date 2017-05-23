@@ -74,6 +74,7 @@ public class ShipController : MonoBehaviour
         Transform TransSmoke = Helpers.Helpers.FindDeepChild(transform, "SpawnEffects");
         EffectsManager.Instance.CreateSmokeDamage(gameObject,TransSmoke.position, TransSmoke.rotation,transform.name);
         EffectsManager.Instance.CreateTrailBoat(gameObject, TransSmoke.position, TransSmoke.rotation);
+        EffectsManager.Instance.CreateMistBoat(gameObject, TransSmoke.position, TransSmoke.rotation);
     }
     void Awake()
     {
@@ -93,15 +94,15 @@ public class ShipController : MonoBehaviour
         {
             if (!IsDeath)
             {
-                if (CharacterParameters.currentVelocityForwards > 0.0f)
-                {
+                //if (CharacterParameters.currentVelocityForwards > 0.0f)
+                //{
 
-                    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityForwards);
-                }
-                else if (CharacterParameters.currentVelocityBackwards > 0.0f)
-                {
-                    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityBackwards);
-                }
+                //    EffectsManager.Instance.UpdateTrailBoat(-CharacterParameters.currentVelocityForwards);
+                //}
+                //else if (CharacterParameters.currentVelocityBackwards > 0.0f)
+                //{
+                //    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityBackwards);
+                //}
                 EffectsManager.Instance.UpdateDamage(transform.name,Health,true,EnemyShipBehaivour.Following);
                 Backwards();
                 Forwards();

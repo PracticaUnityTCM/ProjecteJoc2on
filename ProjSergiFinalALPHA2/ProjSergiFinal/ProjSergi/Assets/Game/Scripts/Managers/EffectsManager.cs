@@ -10,6 +10,8 @@ public class EffectsManager : MonoBehaviour {
     [SerializeField]
     public Dictionary<string, GameObject> SmokesDamages;
     public Dictionary<string, GameObject> TrailsBoats;
+    public GameObject MistBoatEffect;
+    private GameObject MistBoatObj;
     public GameObject TrailBoatEffect;
     private GameObject TrailBoatObj;
 
@@ -172,9 +174,9 @@ public class EffectsManager : MonoBehaviour {
         TrailBoatObj = Instantiate(TrailBoatEffect, positiion, rotation) as GameObject;
         Helpers.Helpers.Parent(parent, TrailBoatObj);
     }
-    public void UpdateTrailBoat(float velocity)
+    public  void CreateMistBoat(GameObject parent, Vector3 position, Quaternion rotation)
     {
-       // if(TrailBoatObj!=null)
-       // TrailBoatObj.GetComponent<TrailBoatEffect>().UpdateParticleSystemTrail(velocity);
+        MistBoatObj = Instantiate(MistBoatEffect, position, rotation) as GameObject;
+        Helpers.Helpers.Parent(parent, MistBoatObj);
     }
 }
