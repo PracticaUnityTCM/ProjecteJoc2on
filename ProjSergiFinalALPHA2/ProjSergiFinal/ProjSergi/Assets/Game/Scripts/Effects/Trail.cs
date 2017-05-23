@@ -41,16 +41,17 @@ public class Trail : MonoBehaviour
     void Start()
     {
         trailObj = new GameObject("Trail");
-        trailObj.transform.parent = null;
+        trailObj.transform.parent = transform;
         trailObj.transform.position = Vector3.zero;
-        trailObj.transform.rotation = Quaternion.identity;
+        trailObj.transform.rotation = Quaternion.Euler(90,0,0);
         trailObj.transform.localScale = Vector3.one;
+       // trailObj.layer=
         MeshFilter meshFilter = (MeshFilter)trailObj.AddComponent(typeof(MeshFilter));
         mesh = meshFilter.mesh;
         trailObj.AddComponent(typeof(MeshRenderer));
         instanceMaterial = new Material(material);
         fadeOutRatio = 1f / instanceMaterial.GetColor("_TintColor").a;
-        trailObj.renderer.material = instanceMaterial;
+        trailObj.GetComponent<Renderer>().material = instanceMaterial;
     }
 
     void Update()
@@ -115,10 +116,10 @@ public class Trail : MonoBehaviour
         // Do we render this?
         if (pointCnt < 2)
         {
-            trailObj.renderer.enabled = false;
+            trailObj.GetComponent<Renderer>().enabled = false;
             return;
         }
-        trailObj.renderer.enabled = true;
+        trailObj.GetComponent<Renderer>().enabled = true;
 
         Color[] meshColors;
         lifeTimeRatio = 1 / lifeTime;

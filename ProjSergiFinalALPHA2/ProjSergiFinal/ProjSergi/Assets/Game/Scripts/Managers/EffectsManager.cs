@@ -9,9 +9,14 @@ using UnityEngine;
 public class EffectsManager : MonoBehaviour {
     [SerializeField]
     public Dictionary<string, GameObject> SmokesDamages;
+    public Dictionary<string, GameObject> TrailsBoats;
+    public GameObject TrailBoatEffect;
+    private GameObject TrailBoatObj;
+
     public GameObject FireThower;
     
     private GameObject FireThrowerObj;
+    
     public GameObject DamageSmoke;
     private GameObject DamageSmokeObj;
     public GameObject DropWater;
@@ -161,5 +166,15 @@ public class EffectsManager : MonoBehaviour {
     {
         yield return new WaitForSeconds(num);
         Destroy(gameObj);
+    }
+    public void CreateTrailBoat(GameObject parent,Vector3 positiion, Quaternion rotation)
+    {
+        TrailBoatObj = Instantiate(TrailBoatEffect, positiion, rotation) as GameObject;
+        Helpers.Helpers.Parent(parent, TrailBoatObj);
+    }
+    public void UpdateTrailBoat(float velocity)
+    {
+       // if(TrailBoatObj!=null)
+       // TrailBoatObj.GetComponent<TrailBoatEffect>().UpdateParticleSystemTrail(velocity);
     }
 }

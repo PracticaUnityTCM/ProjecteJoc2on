@@ -36,7 +36,7 @@ public class ShipController : MonoBehaviour
         GetComponent<ShipBulletsController>().HandleInputs = true;
         HandleCollisions = true;
         RB.useGravity = false;
-        RB.isKinematic = true;
+       
         CharacterParameters.currentVelocityBackwards = 0.0f;
         CharacterParameters.currentVelocityForwards = 0.0f;
         transform.position = spawnPoint.position;
@@ -62,7 +62,7 @@ public class ShipController : MonoBehaviour
         IsDeath = true;
 
         RB.useGravity = true;
-        RB.isKinematic = false;
+      
     }
     void Start()
     {
@@ -73,6 +73,7 @@ public class ShipController : MonoBehaviour
 
         Transform TransSmoke = Helpers.Helpers.FindDeepChild(transform, "SpawnEffects");
         EffectsManager.Instance.CreateSmokeDamage(gameObject,TransSmoke.position, TransSmoke.rotation,transform.name);
+        EffectsManager.Instance.CreateTrailBoat(gameObject, TransSmoke.position, TransSmoke.rotation);
     }
     void Awake()
     {
@@ -82,7 +83,7 @@ public class ShipController : MonoBehaviour
     }
     void Update()
     {
-        StartCoroutine(BalancingAnimation(1));
+       // StartCoroutine(BalancingAnimation(1));
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene("Menu");
@@ -92,6 +93,15 @@ public class ShipController : MonoBehaviour
         {
             if (!IsDeath)
             {
+                if (CharacterParameters.currentVelocityForwards > 0.0f)
+                {
+
+                    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityForwards);
+                }
+                else if (CharacterParameters.currentVelocityBackwards > 0.0f)
+                {
+                    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityBackwards);
+                }
                 EffectsManager.Instance.UpdateDamage(transform.name,Health,true,EnemyShipBehaivour.Following);
                 Backwards();
                 Forwards();
@@ -216,23 +226,6 @@ public class ShipController : MonoBehaviour
         
         //transform.rotation=Quaternion.Slerp(transform.rotation,transform.rotation*Quaternion.Euler(50f,50f,50f),Time.deltaTime*5f);
     }
-    IEnumerator BalancingAnimation(int numNeg)
-    {
-        yield return null;
-       // yield return new WaitForSeconds(0.5f);
-        //GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        GetComponent<Rigidbody>().AddRelativeTorque(transform.forward * 5000 * numNeg*Time.deltaTime, ForceMode.Impulse);
-
-        numNeg = -numNeg;
         
-       // StartCoroutine(BalancingAnimation(numNeg));
-    }
-    IEnumerator BalancingAnimation2(int num)
-    {
-        yield return null;
-        GetComponent<Rigidbody>().AddRelativeTorque(transform.forward * 5000 * num*Time.deltaTime, ForceMode.Impulse);
-
-     
-    }
 }
 
