@@ -82,6 +82,7 @@ public class ShipController : MonoBehaviour
     }
     void Update()
     {
+        StartCoroutine(BalancingAnimation(1));
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene("Menu");
@@ -214,6 +215,24 @@ public class ShipController : MonoBehaviour
         // transform.MoveTowards(Vector3.Lerp(transform.position,SinkingDir.position,Time.deltaTime*5f);   
         
         //transform.rotation=Quaternion.Slerp(transform.rotation,transform.rotation*Quaternion.Euler(50f,50f,50f),Time.deltaTime*5f);
+    }
+    IEnumerator BalancingAnimation(int numNeg)
+    {
+        yield return null;
+       // yield return new WaitForSeconds(0.5f);
+        //GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        GetComponent<Rigidbody>().AddRelativeTorque(transform.forward * 5000 * numNeg*Time.deltaTime, ForceMode.Impulse);
+
+        numNeg = -numNeg;
+        
+       // StartCoroutine(BalancingAnimation(numNeg));
+    }
+    IEnumerator BalancingAnimation2(int num)
+    {
+        yield return null;
+        GetComponent<Rigidbody>().AddRelativeTorque(transform.forward * 5000 * num*Time.deltaTime, ForceMode.Impulse);
+
+     
     }
 }
 

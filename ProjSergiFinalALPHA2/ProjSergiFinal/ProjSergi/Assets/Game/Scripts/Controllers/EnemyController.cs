@@ -51,7 +51,7 @@ public class EnemyController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         transform.rotation = Quaternion.Euler(new Vector3(0 , 0, 0));
-        Player = GameObject.Find("Ship (1)").transform;
+        Player = GameObject.Find("Ship(1)").transform;
             
         Transform TransSmoke = Helpers.Helpers.FindDeepChild(transform, "SpawnEffects");
         EffectsManager.Instance.CreateSmokeDamage(gameObject, TransSmoke.position, TransSmoke.rotation, transform.name);

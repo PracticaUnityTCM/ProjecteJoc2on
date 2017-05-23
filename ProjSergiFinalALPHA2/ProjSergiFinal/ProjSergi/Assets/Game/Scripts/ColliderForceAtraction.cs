@@ -9,6 +9,7 @@ public class ColliderForceAtraction : MonoBehaviour {
     {
         if (coll.gameObject.tag == "Ship")
         {
+            Debug.Log("ss");
             coll.gameObject.GetComponent<Rigidbody>().isKinematic = false;
             coll.gameObject.GetComponent<Rigidbody>().AddForce(-(coll.gameObject.GetComponent<Transform>().position - transform.position) * forceFactorEnter * Time.smoothDeltaTime);
         }
@@ -22,8 +23,8 @@ public class ColliderForceAtraction : MonoBehaviour {
     {
         if (coll.gameObject.tag == "Ship")
         {
-            coll.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            coll.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+         
+            coll.gameObject.GetComponent<Rigidbody>().velocity = Vector3.one;
             coll.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         
         }

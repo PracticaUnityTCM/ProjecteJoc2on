@@ -7,7 +7,7 @@ public class AudioManager : MonoBehaviour
 {
     public enum AudioChannel { Master, Sfx, Music };
     public float masterVolumePercent= 0.5f;
-    public float sfxVolumePercent= 0.5f;
+    public float sfxVolumePercent= 0.25f;
     public float musicVolumePercent = 0.5f;
 
     AudioSource sfx2DSource, sfxLoopASource;//sfxMenuAudioSource;
@@ -98,10 +98,10 @@ public class AudioManager : MonoBehaviour
                     playerT = FindObjectOfType<ShipController>().transform;
                 }
              
-                masterVolumePercent = PlayerPrefs.GetFloat("master vol", 1);
-                sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", 1);
+                masterVolumePercent = PlayerPrefs.GetFloat("master vol", 0.5f);
+                sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", 0.25f);
                 Debug.Log(sfxVolumePercent + "s");
-                musicVolumePercent = PlayerPrefs.GetFloat("music vol", 1);
+                musicVolumePercent = PlayerPrefs.GetFloat("music vol", 0.5f);
                 MusicMixer.audioMixer.SetFloat("Attenuation",musicVolumePercent);
                 SFXMixer.audioMixer.SetFloat("Attenuation", sfxVolumePercent);
                 MasterMixer.SetFloat("Attenuation", masterVolumePercent);
@@ -168,8 +168,9 @@ public class AudioManager : MonoBehaviour
     }
     public void playSoundEfect(string name)
     {
-      //  AudioSource.PlayClipAtPoint(library.GetClipFromName(name), new Vector3(0, 0, 0));
-        sfx2DSource.PlayOneShot(library.GetClipFromName(name), sfxVolumePercent*masterVolumePercent);
+        //  AudioSource.PlayClipAtPoint(library.GetClipFromName(name), new Vector3(0, 0, 0));
+        Debug.Log(sfxVolumePercent * masterVolumePercent + "VOLUM");
+            sfx2DSource.PlayOneShot(library.GetClipFromName(name));
     }
     //public void PlaySound(string soundName, Vector3 pos)
     //{
@@ -190,7 +191,7 @@ public class AudioManager : MonoBehaviour
         if (!startPress)
         {
            
-            sfx2DSource.PlayOneShot(library.GetClipFromName("StartFireThrower"), masterVolumePercent * sfxVolumePercent);
+            sfx2DSource.PlayOneShot(library.GetClipFromName("StartFireThrower"));
             startPress = true;
            // StartCoroutine(WaitFor(6f));
         }
@@ -208,7 +209,7 @@ public class AudioManager : MonoBehaviour
         startPress = false;
         StartCoroutine(WaitFor(2f));
         sfxLoopASource.Stop();
-        sfx2DSource.PlayOneShot(library.GetClipFromName("EndFireThrower"), masterVolumePercent * sfxVolumePercent);
+        sfx2DSource.PlayOneShot(library.GetClipFromName("EndFireThrower"));
     }
     IEnumerator WaitFor(float num)
     {

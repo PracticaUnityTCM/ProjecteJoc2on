@@ -107,7 +107,7 @@ public class ShipBulletsController : MonoBehaviour
                 if (powerShoot < 3f)
                     powerShoot += Time.deltaTime;
             }
-            if (Input.GetKeyUp(KeyCode.Space))
+            if (Input.GetKeyUp(KeyCode.Space) && CanShootNumBullets(1))
             {
                 nextFire = Time.time + fireRate;
                 Transform s = Helpers.Helpers.FindDeepChild(transform, "SpawnBulletFront");
@@ -119,7 +119,7 @@ public class ShipBulletsController : MonoBehaviour
 
             //if (ShipController.CharacterParameters.typeShip == typeShip.Europe)
             //{
-            if (GameManager.Instance.CanShootNumBullets(3))
+            if (CanShootNumBullets(3))
             {
                 if (Input.GetKeyDown(KeyCode.J))
                 {
@@ -178,6 +178,11 @@ public class ShipBulletsController : MonoBehaviour
         }
      
     }
-    
-   
+    public bool CanShootNumBullets(int num)
+    {
+        if (ShipController.amunnition < num)
+            return false;
+        return true;
+    }
+
 }

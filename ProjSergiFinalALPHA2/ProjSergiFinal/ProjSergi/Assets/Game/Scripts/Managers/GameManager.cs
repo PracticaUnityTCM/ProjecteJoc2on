@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
     {
         if (_instance != null && _instance != this)
         {
+            
             Destroy(this.gameObject);
         }
         else
@@ -27,13 +28,14 @@ public class GameManager : MonoBehaviour {
             _instance = this;
           
             DontDestroyOnLoad(this.gameObject);
-            Ship = GameObject.Find("Ship (1)").GetComponent<ShipController>();
-            Ship.Health = 100;
-            Ship.amunnition = 15;
+            
         }
+        Ship = GameObject.Find("Ship(1)").GetComponent<ShipController>();
+        Ship.Health = 100;
+        Ship.amunnition = 15;
     }
     void Start () {
-        Ship = GameObject.Find("Ship (1)").GetComponent<ShipController>();
+       Ship = GameObject.Find("Ship(1)").GetComponent<ShipController>();
        
        Ship.Health = 100;
        Ship.amunnition = 15;
@@ -50,10 +52,5 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 		
 	}
-    public bool CanShootNumBullets(int num)
-    {
-       if (Ship.amunnition < num)
-            return false;
-        return true;
-    }
+    
 }
