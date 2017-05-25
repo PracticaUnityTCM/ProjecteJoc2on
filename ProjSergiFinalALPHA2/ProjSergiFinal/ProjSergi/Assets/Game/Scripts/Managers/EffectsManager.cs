@@ -179,4 +179,12 @@ public class EffectsManager : MonoBehaviour {
         MistBoatObj = Instantiate(MistBoatEffect, position, rotation) as GameObject;
         Helpers.Helpers.Parent(parent, MistBoatObj);
     }
+    public void UpdateMistBoatEffect(float velocity)
+    {
+        if (MistBoatObj == null)
+            Debug.Log("ss");
+        else
+            Debug.Log("dd");
+        MistBoatObj.GetComponentInChildren<MistBoatEffect>().UpdateMistBoatEffect(velocity);
+    }
 }

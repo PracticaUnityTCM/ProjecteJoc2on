@@ -134,8 +134,7 @@ public class BulletController : MonoBehaviour
 
         if (bulletType == TypeBullet.Fire)
             EffectsManager.Instance.CreateStartBulletOnFire(gameObject, position, rotation, dist, flightDuration+0.5f);
-        EffectsManager.Instance.CreateStartThrowerSmokeShoot(transform.position, rotation * Quaternion.Euler(new Vector3(firingAngle, 0.0f, 0.0f)),0.6f);
-        EffectsManager.Instance.CreateStartSmokeShoot(transform.position, rotation, 1.0f);
+        
     }
      public  void FireToPosition(Vector3 pos, Quaternion Rotation,bool isShootShip,float VELOCITY)
     {
@@ -235,7 +234,14 @@ public class BulletController : MonoBehaviour
     }
     public void ShootBulletForce(Vector3 direction)
     {
+        EffectsManager.Instance.CreateStartThrowerSmokeShoot(transform.position, transform.rotation, 1.0f);
+        EffectsManager.Instance.CreateStartSmokeShoot(transform.position, transform.rotation, 1.0f);
+        if (bulletType == TypeBullet.Fire)
+            EffectsManager.Instance.CreateStartBulletOnFire(gameObject, transform.position, transform.rotation, dist, 5f);
         GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse);
+       
+       
+        
     }
     //public void ShootBulletToPosicionForce(Vector3 target,Vector3 origin,float force)
     //{

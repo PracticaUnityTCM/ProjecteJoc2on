@@ -20,12 +20,7 @@ public class CollectableObj : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        TimerActive += Time.deltaTime;
-        if(TimerActive<TimerActiveTotal)
-        {
-            Debug.Log("s");
-            TimerActive = 0;
-        }
+        
 	}
     void OnTriggerEnter(Collider other)
     {
@@ -38,14 +33,14 @@ public class CollectableObj : MonoBehaviour {
             else if (typeObj == TypeCollectableObj.BulletFire)
             {
                 other.gameObject.GetComponent<ShipBulletsController>().UpdateBulletType(TypeBullet.Fire);
-              //  StartCoroutine(Countdown(10));
-               // other.gameObject.GetComponent<ShipBulletsController>().UpdateBulletType(TypeBullet.Normal);
+                //StartCoroutine(Countdown(10));
+                //other.gameObject.GetComponent<ShipBulletsController>().UpdateBulletType(TypeBullet.Normal);
             }
             else if (typeObj == TypeCollectableObj.BigShipCharged)
             {
                 //other.gameObject.GetComponent<ShipBulletsController>().SetBigChargerShip() ;
             }
-          
+            
             Destroy(gameObject.transform.parent.gameObject);
         }
     }

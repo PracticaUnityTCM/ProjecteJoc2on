@@ -25,6 +25,7 @@ public class ShipBulletsController : MonoBehaviour
     }
     public TypeAtack typeAtack;
     public TypeBullet typeBulletLocal;
+    public bool BulletFireActive;
 
 
     public float powerShoot = 0.0f;
@@ -48,19 +49,26 @@ public class ShipBulletsController : MonoBehaviour
     public void UpdateBulletType(TypeBullet typeBullet)
     {
         typeBulletLocal = typeBullet;
-        PUBulletFireTimer += Time.deltaTime;
-        if (PUBulletFireTimer > PUBulletFireTimerTotal)
-        {
-            typeBulletLocal = TypeBullet.Normal;
-            PUBulletFireTimer = 0;
-        }
+        BulletFireActive = true;
         
+
     }
     public GameObject projectile;
     public float fireRate = 0.5F;
     private float nextFire = 0.0F;
     void Update()
     {
+        if (BulletFireActive)
+        {
+            PUBulletFireTimer += Time.deltaTime;
+            if (PUBulletFireTimer > PUBulletFireTimerTotal)
+            {
+                BulletFireActive = false;
+                typeBulletLocal = TypeBullet.Normal;
+                PUBulletFireTimer = 0;
+            }
+            
+        }
         if (HandleInputs)
         {
             //if (Input.GetMouseButtonDown(0) && GameManager.Instance.CanShootNumBullets(1))
@@ -104,14 +112,14 @@ public class ShipBulletsController : MonoBehaviour
             }
             if (Input.GetKey(KeyCode.Space))
             {
-                if (powerShoot < 3f)
+                if (powerShoot < 1f)
                     powerShoot += Time.deltaTime;
             }
             if (Input.GetKeyUp(KeyCode.Space) && CanShootNumBullets(1))
             {
                 nextFire = Time.time + fireRate;
                 Transform s = Helpers.Helpers.FindDeepChild(transform, "SpawnBulletFront");
-                GetComponentInChildren<SpawnBullet>().SpawnBulletFrontForce(new Vector3(transform.forward.x, ComponentYShootFront, transform.forward.z) * powerShoot * forceMultiplierShootFront, TypeBullet.Normal, "BulletShootPlayer");
+                GetComponentInChildren<SpawnBullet>().SpawnBulletFrontForce(new Vector3(transform.forward.x, ComponentYShootFront, transform.forward.z) * powerShoot * forceMultiplierShootFront, typeBulletLocal, "BulletShootPlayer");
                 AudioManager.Instance.playSoundEfect("CannonShot");
                 GameManager.Instance.DescreseAmuntion(1);
             }

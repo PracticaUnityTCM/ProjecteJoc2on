@@ -36,7 +36,8 @@ public class ShipController : MonoBehaviour
         GetComponent<ShipBulletsController>().HandleInputs = true;
         HandleCollisions = true;
         RB.useGravity = false;
-       
+        RB.angularVelocity = Vector3.zero;
+        RB.velocity = Vector3.zero;
         CharacterParameters.currentVelocityBackwards = 0.0f;
         CharacterParameters.currentVelocityForwards = 0.0f;
         transform.position = spawnPoint.position;
@@ -103,6 +104,14 @@ public class ShipController : MonoBehaviour
                 //{
                 //    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityBackwards);
                 //}
+                if(CharacterParameters.currentVelocityBackwards>0.0f)
+                {
+                    EffectsManager.Instance.UpdateMistBoatEffect(CharacterParameters.currentVelocityBackwards);
+                }
+                if(CharacterParameters.currentVelocityForwards>0.0f)
+                {
+                    EffectsManager.Instance.UpdateMistBoatEffect(-CharacterParameters.currentVelocityBackwards);
+                }
                 EffectsManager.Instance.UpdateDamage(transform.name,Health,true,EnemyShipBehaivour.Following);
                 Backwards();
                 Forwards();
