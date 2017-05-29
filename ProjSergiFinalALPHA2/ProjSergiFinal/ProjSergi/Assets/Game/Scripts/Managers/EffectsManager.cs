@@ -5,20 +5,26 @@ using System;
 
 
 using UnityEngine;
-
+public class Trail
+{
+    public GameObject TrailLocalObj;
+    public GameObject TrailObj;
+    public GameObject MistObj;
+}
 public class EffectsManager : MonoBehaviour {
-    [SerializeField]
-    public Dictionary<string, GameObject> SmokesDamages;
-    public Dictionary<string, GameObject> TrailsBoats;
+    public static Dictionary<string, GameObject> SmokesDamages;
+    public static Dictionary<string, Trail> TrailsBoats;
+    public static  Dictionary<string, GameObject> FireThrowers;
     public GameObject MistBoatEffect;
     private GameObject MistBoatObj;
     public GameObject TrailBoatEffect;
     private GameObject TrailBoatObj;
-
+    public GameObject TrailBoatEffectLocal;
+    private GameObject TrailBoatLocalObj;
     public GameObject FireThower;
     
+    private GameObject FireThrowerObjShip;
     private GameObject FireThrowerObj;
-    
     public GameObject DamageSmoke;
     private GameObject DamageSmokeObj;
     public GameObject DropWater;
@@ -33,30 +39,63 @@ public class EffectsManager : MonoBehaviour {
     private GameObject FireBulletObj;
     public bool EnableEffects;
     private int NumSmokeDamage;
+    private int NumFireThrower;
     private static EffectsManager _instance = null;
    
     public static EffectsManager Instance
     {
         get { return _instance; }
     }
+    static public bool once_call;
 
     private void Awake()
     {
-        if (_instance != null && _instance != this)
+        if (!once_call)
         {
-            Destroy(this.gameObject);
+            DontDestroyOnLoad(this);
+            once_call = true;
+            _instance = this;
+            DontDestroyOnLoad(_instance);
+            // DontDestroyOnLoad(gameObject);
+            
+            TrailsBoats = new Dictionary<string, Trail>();
+            FireThrowers = new Dictionary<string, GameObject>();
+            SmokesDamages = new Dictionary<string, GameObject>();
         }
         else
         {
-            _instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            Destroy(gameObject);
         }
+        //if (_instance == null)
+        //{
+        //    _instance = FindObjectOfType(typeof(EffectsManager)) as EffectsManager;
+        //    if (_instance == null) // create new object
+        //    {
+             
+        //    }
+        //}
+        //else if (_instance != this)
+        //{
+        //    Destroy(gameObject);
+        //}
+        //if (_instance != null && _instance != this)
+        //{
+        //    Destroy(this.gameObject);
+        //}
+        //else
+        //{
+        //    _instance = this;
+        //    DontDestroyOnLoad(this.gameObject);
+        //}
         NumSmokeDamage = 0;
-        SmokesDamages = new Dictionary<string, GameObject>();
+        NumFireThrower = 0;
+      
     }
     // Use this for initialization
     void Start () {
-       
+        TrailsBoats = new Dictionary<string, Trail>();
+        FireThrowers = new Dictionary<string, GameObject>();
+        SmokesDamages = new Dictionary<string, GameObject>();
 
     }
 	
@@ -68,55 +107,68 @@ public class EffectsManager : MonoBehaviour {
     {
         GameObject objnew;
        
-        if (EnableEffects)
+        if (EnableEffects && !SmokesDamages.TryGetValue(nameObject,out objnew))
         {
             objnew = Instantiate(DamageSmoke, position, Quaternion.Euler(new Vector3(rotation.x - 90f, rotation.y, rotation.z))) as GameObject;
             objnew.SetActive(true);
             Helpers.Helpers.Parent(parent, objnew);
-            SmokesDamages.Add(parent.name+NumSmokeDamage, objnew);
-            NumSmokeDamage++;
-        }
-    }
-    public void UpdateDamageEnemy(EnemyShipBehaivour EnemyBehaiour,float health,string name)
-    {
-        GameObject obj;
-        if (EnableEffects)
-        {
-          //  if(SmokesDamages.TryGetValue(name, out obj))
-            //obj.GetComponent<WhiteSmokeDamageEffect>().UpdateEnemyBehaibour(EnemyBehaiour,health);
+            SmokesDamages.Add(nameObject, objnew);
+            Debug.Log(nameObject+"crates");
         }
     }
     public void UpdateDamage(string name,float health,bool isShip,EnemyShipBehaivour enemyBehaivour)
     {
         GameObject obj;
-
+        Debug.Log(name+"Updates");
         if (EnableEffects)
         {
             if (SmokesDamages.TryGetValue(name, out obj)) 
-            if(obj!=null)obj.GetComponent<WhiteSmokeDamageEffect>().UpdateSmoke(health, isShip, enemyBehaivour);
+                if(obj!=null)obj.GetComponent<WhiteSmokeDamageEffect>().UpdateSmoke(health, isShip, enemyBehaivour);
             
-        else
-            Debug.LogError("Smoke damage not fount");
+               else
+             Debug.LogError("Smoke damage not fount");
         }
     }
-    public void CreateFireThrower(GameObject parent,Vector3 position,Quaternion rotation)
+    public void CreateFireThrower(GameObject parent,Vector3 position,Quaternion rotation , string nameObject,string layer)
+    {
+        GameObject newObj;
+        if (EnableEffects)
+        {
+            newObj = Instantiate(FireThower, position, Quaternion.Euler(new Vector3(rotation.x , rotation.y, rotation.z))) as GameObject;
+            newObj.SetActive(false);
+            FireThrowers.Add(nameObject, newObj);
+            Helpers.Helpers.Parent(parent, newObj);
+            newObj.transform.GetChild(1).gameObject.layer = LayerMask.NameToLayer(layer);
+           
+        }
+    }
+    public void CreateFireThrowerShip(GameObject parent, Vector3 position,Quaternion rotation,string layer)
     {
         if (EnableEffects)
         {
-            FireThrowerObj = Instantiate(FireThower, position, rotation) as GameObject;
-            FireThrowerObj.SetActive(false);
-            Helpers.Helpers.Parent(parent, FireThrowerObj);
+            FireThrowerObjShip = Instantiate(FireThower, position, rotation) as GameObject;
+            FireThrowerObjShip.SetActive(false);
+            FireThrowerObjShip.layer = LayerMask.NameToLayer(layer);
+            ///FireThrowers.Add(FireThrowerObjShip.name + NumFireThrower, FireThrowerObjShip);
+            Helpers.Helpers.Parent(parent, FireThrowerObjShip);
         }
     }
     public void StartFireThrower()
     {
-   
-        if (EnableEffects) 
-        FireThrowerObj.gameObject.GetComponent<FireThrowerEffect>().StartFireEffect();
+
+        if (EnableEffects)
+        {
+            FireThrowerObjShip.SetActive(true);
+            FireThrowerObjShip.gameObject.GetComponent<FireThrowerEffect>().StartFireEffect();
+        }
     }
     public void StopFireThrower()
-    {   if(EnableEffects)
-        FireThrowerObj.gameObject.GetComponent<FireThrowerEffect>().Stop();
+    {
+        if (EnableEffects)
+        {
+            FireThrowerObjShip.gameObject.GetComponent<FireThrowerEffect>().Stop();
+            FireThrowerObjShip.SetActive(false);
+        }
     }
     public void CreateStartSplahWater(Vector3 position,Quaternion rotation,float duration) 
     {
@@ -169,22 +221,79 @@ public class EffectsManager : MonoBehaviour {
         yield return new WaitForSeconds(num);
         Destroy(gameObj);
     }
-    public void CreateTrailBoat(GameObject parent,Vector3 positiion, Quaternion rotation)
+    public void CreateTrailMistBoat(GameObject parent, Vector3 position, Quaternion rotation, string nameObj)
     {
-        TrailBoatObj = Instantiate(TrailBoatEffect, positiion, rotation) as GameObject;
-        Helpers.Helpers.Parent(parent, TrailBoatObj);
+        Trail obj;
+        if (!TrailsBoats.TryGetValue(nameObj, out obj))
+        { 
+        GameObject newObjLocal, newObj, mistObj;
+        mistObj = Instantiate(MistBoatEffect, position, rotation) as GameObject;
+        newObj = Instantiate(TrailBoatEffect, position, rotation) as GameObject;
+        newObjLocal = Instantiate(TrailBoatEffectLocal, position, rotation) as GameObject;
+        Trail TrailObj = new Trail();
+        TrailObj.TrailLocalObj = newObjLocal;
+        TrailObj.TrailObj = newObj;
+        TrailObj.MistObj = mistObj;
+
+        TrailsBoats.Add(nameObj, TrailObj);
+        Helpers.Helpers.Parent(parent, newObjLocal);
+        Helpers.Helpers.Parent(parent, newObj);
+        Helpers.Helpers.Parent(parent, mistObj);
+        }
     }
-    public  void CreateMistBoat(GameObject parent, Vector3 position, Quaternion rotation)
+    public void UpdateTrailMistBoat(float velocity,string nameObj)
     {
-        MistBoatObj = Instantiate(MistBoatEffect, position, rotation) as GameObject;
-        Helpers.Helpers.Parent(parent, MistBoatObj);
+        Trail obj;
+        if (TrailsBoats.TryGetValue(nameObj, out obj))
+        {
+            obj.TrailLocalObj.GetComponentInChildren<TrailBoatEffect>().UpdateParticleSystemTrailForceOverLifeTime(velocity);
+            obj.TrailObj.GetComponentInChildren<TrailBoatEffect>().UpdateParticleSystemTrail(velocity);
+           obj.MistObj.GetComponentInChildren<MistBoatEffect>().UpdateMistBoatEffect(velocity);
+           // TrailBoatLocalObj.GetComponentInChildren<TrailBoatEffect>().UpdateParticleSystemTrailForceOverLifeTime(velocity);
+        }
     }
-    public void UpdateMistBoatEffect(float velocity)
+    //public  void CreateMistBoat(GameObject parent, Vector3 position, Quaternion rotation)
+    //{
+    //    MistBoatObj = Instantiate(MistBoatEffect, position, rotation) as GameObject;
+    //    Helpers.Helpers.Parent(parent, MistBoatObj);
+    //}
+    //public void UpdateMistBoatEffect(float velocity)
+    //{
+    //    if (MistBoatObj == null)
+    //        Debug.Log("ss");
+    //    else
+    //        Debug.Log("dd");
+    //    MistBoatObj.GetComponentInChildren<MistBoatEffect>().UpdateMistBoatEffect(velocity);
+    //}
+    public void StartFireThrower(string name)
     {
-        if (MistBoatObj == null)
-            Debug.Log("ss");
-        else
-            Debug.Log("dd");
-        MistBoatObj.GetComponentInChildren<MistBoatEffect>().UpdateMistBoatEffect(velocity);
+        
+        if(EnableEffects)
+        {
+            GameObject obj;
+            if (FireThrowers.TryGetValue(name, out obj))
+                if (obj != null) {
+                    obj.SetActive(true);
+                    obj.GetComponent<FireThrowerEffect>().StartFireEffect();
+                }
+        }
+    }
+    public void StopFireThrower(string name)
+    {
+        if (EnableEffects)
+        {
+            GameObject obj;
+            if (FireThrowers.TryGetValue(name, out obj))
+                if (obj != null) {
+                    obj.GetComponent<FireThrowerEffect>().Stop();
+                    obj.SetActive(false);
+                }
+        }
+    }
+    void OnDestroy()
+    {
+        TrailsBoats.Clear();
+        SmokesDamages.Clear();
+        FireThrowers.Clear();
     }
 }

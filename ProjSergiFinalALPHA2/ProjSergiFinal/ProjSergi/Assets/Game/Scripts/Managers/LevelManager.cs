@@ -20,6 +20,7 @@ public class LevelManager : MonoBehaviour {
     }
     public void Start()
     {
+        Ship = GameObject.FindGameObjectWithTag("Ship");
         _checkpoints = FindObjectsOfType<Checkpoint>().OrderBy(t => t.transform.position.x).ToList();
         _currentCheckPointIndex = _checkpoints.Count > 0 ? 0 : -1;
 
@@ -46,7 +47,7 @@ public class LevelManager : MonoBehaviour {
         _checkpoints[_currentCheckPointIndex].PlayerLeftCheckpoint();
         _currentCheckPointIndex++;
         _checkpoints[_currentCheckPointIndex].PlayerHitCheckpoint();
-    }
+        }
         // TODO BONUS
     }
     public void KillPlayer(bool withRotation)
@@ -57,35 +58,11 @@ public class LevelManager : MonoBehaviour {
     {
         Ship.GetComponent<ShipController>().Kill(WithRotation);
         CameraController.IsFollowing = false;
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
         CameraController.IsFollowing = true;
         if (_currentCheckPointIndex != -1)
             _checkpoints[_currentCheckPointIndex].SpawnPlayer(Ship);
 
         //TODO POINTS
     }
-
-    public void EuropeanLevel()
-    {
-        SceneManager.LoadScene("Aigua");
-    }
-    public void AsianLevel()
-    {
-        SceneManager.LoadScene("Asian");
-    }
-    public void VikingLevel()
-    {
-        SceneManager.LoadScene("Viking");
-    }
-    public void Exit()
-    {
-        SceneManager.LoadScene("Level Selector");
-        if (Input.GetKeyDown(KeyCode.Escape))
-            {
-            SceneManager.LoadScene("Level Selector");
-            }
-    }
-
-
-
 }

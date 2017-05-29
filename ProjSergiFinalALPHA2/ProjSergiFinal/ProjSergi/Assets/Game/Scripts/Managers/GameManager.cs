@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour {
     }
     public void IncresaseAmunnition(int num)
     {
+        
         Ship.GetComponent<ShipController>().amunnition += num;
     }
 	// Update is called once per frame

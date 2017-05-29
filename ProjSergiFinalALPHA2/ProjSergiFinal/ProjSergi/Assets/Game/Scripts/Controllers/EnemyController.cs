@@ -5,14 +5,16 @@ public enum EnemyShipBehaivour
 {
     Patroling,
     Following,
-    Shooting
+    Shooting,
+    Turret
 }
 public class EnemyController : MonoBehaviour {
     //public CharacterParameters CharacterParameters;
     
     public Transform Player;
     public GameObject Bullet;
-    public float rotationSpeed,moveSpeed;
+    public float rotationSpeed=250f;
+    public float moveSpeed=2f;
     public bool isFollowing;
     //public Vector3 distance;
     public float distance;
@@ -28,7 +30,7 @@ public class EnemyController : MonoBehaviour {
     public TypeBullet typeBulletEnemy;
     public EnemyShipBehaivour EnemyShipBehaibour;
    private GameObject Canvas;
-   
+    
     public void TakeDamage(int damage)
     {
         Health -= damage;
@@ -52,33 +54,37 @@ public class EnemyController : MonoBehaviour {
     void Start () {
         transform.rotation = Quaternion.Euler(new Vector3(0 , 0, 0));
         Player = GameObject.Find("Ship").transform;
-            
+        EnemyShipBehaibour = EnemyShipBehaivour.Patroling;
+        Debug.Log(transform.parent.name+"ssssssssssssss");
         Transform TransSmoke = Helpers.Helpers.FindDeepChild(transform, "SpawnEffects");
-        EffectsManager.Instance.CreateSmokeDamage(gameObject, TransSmoke.position, TransSmoke.rotation, transform.name);
+        EffectsManager.Instance.CreateTrailMistBoat(gameObject,new Vector3(transform.position.x,transform.position.y+1.5f,transform.position.z), transform.rotation, transform.parent.name);
+        EffectsManager.Instance.CreateSmokeDamage(gameObject, TransSmoke.position, TransSmoke.rotation, transform.parent.name);
     }
 	void Awake()
     {
+        Debug.Log(transform.parent.name+"name of parent obj");
         RB = GetComponent<Rigidbody>();
         Health = MaxHealth;
         Canvas = transform.GetChild(3).gameObject;
         Canvas.SetActive(false);
-       
     }
 	// Update is called once per frame
 	void Update ()
     {
-
-        if (Health < 99)
+        EffectsManager.Instance.UpdateTrailMistBoat(GetComponent<MoveOnPath>().speed/2f,transform.parent.name);
+        EffectsManager.Instance.UpdateDamage(transform.parent.name, Health, false, EnemyShipBehaibour);
+        if (Health < 99f)
         {
             Canvas.SetActive(true);   
         }
-        EffectsManager.Instance.UpdateDamage(transform.name, Health, false, EnemyShipBehaibour);
+        
         if (!IsDeath)
         {
             if (EnemyShipBehaibour==EnemyShipBehaivour.Following)
-            { 
+            {
+                Debug.Log("ssFollow player");
                 LookAtPlayer();
-                transform.Translate(Vector3.forward * Time.deltaTime * 1f);
+                transform.Translate(Vector3.forward * Time.deltaTime * moveSpeed);
             }
             if (EnemyShipBehaibour==EnemyShipBehaivour.Shooting)
             {
@@ -97,7 +103,7 @@ public class EnemyController : MonoBehaviour {
     {
       Vector3  targetPoint = new Vector3(Player.transform.position.x, transform.position.y, Player.transform.position.z) - transform.position;
         Quaternion rotation = Quaternion.LookRotation(targetPoint);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 500f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime *rotationSpeed);
     }
     
 }

@@ -9,35 +9,29 @@ public class ShipBulletsController : MonoBehaviour
     [Header("Front bullet parameters")]
     public float forceMultiplierShootFront = 3000f;
     public float ComponentYShootFront = 0.1f;
-
+    public float powerShoot = 0.0f;
+    [Header("Timer PowerUp Bullets Fire")]
     public float PUBulletFireTimer;
     public float PUBulletFireTimerTotal=5f;
-
+    [Header("Timer PowerUp Fire Thrower")]
+    public float PUFireThrowerTimer;
+    public float PUFireThrowerTimerTotal = 15f;
+    [Header("Timer PowerUp Speed Charger")]
     public float SpeedTimer = 0.0f;
     public float SpeedTimerTotal = 2.0f;
-    public bool CanAttackMouse;
-    public GameObject Camera;
+
     public bool HandleInputs;
-    public enum TypeAtack
-    {
-        Normal,
-        Mouse
-    }
-    public TypeAtack typeAtack;
     public TypeBullet typeBulletLocal;
     public bool BulletFireActive;
-
-
-    public float powerShoot = 0.0f;
-    private LayerMask layer;
-    private LayerMask ignoreCameralayer;
+    public bool powerUpFireThrowerActive;
+    public bool PowerUpBigCharger;
+   
+   
     void Start()
     {
         HandleInputs = true;
         ShipController = GetComponent<ShipController>();
-        layer = LayerMask.GetMask("ShootZone");
-        ignoreCameralayer = (1 << 21);
-        //
+        
     }
     
    
@@ -45,15 +39,9 @@ public class ShipBulletsController : MonoBehaviour
     public void SetTypeBullet(TypeBullet typeBullet)
     { 
         typeBulletLocal = typeBullet;
-    }
-    public void UpdateBulletType(TypeBullet typeBullet)
-    {
-        typeBulletLocal = typeBullet;
         BulletFireActive = true;
-        
-
     }
-    public GameObject projectile;
+    
     public float fireRate = 0.5F;
     private float nextFire = 0.0F;
     void Update()
@@ -63,11 +51,23 @@ public class ShipBulletsController : MonoBehaviour
             PUBulletFireTimer += Time.deltaTime;
             if (PUBulletFireTimer > PUBulletFireTimerTotal)
             {
-                BulletFireActive = false;
                 typeBulletLocal = TypeBullet.Normal;
+                BulletFireActive = false;
+               
                 PUBulletFireTimer = 0;
             }
-            
+        }
+        if (powerUpFireThrowerActive)
+        {
+            PUFireThrowerTimer += Time.deltaTime;
+            if(PUFireThrowerTimer > PUFireThrowerTimerTotal)
+            {
+                AudioManager.Instance.FireThrowerAudioEnd();
+                AudioManager.Instance.playSoundEfect("EndFireThrower");
+                powerUpFireThrowerActive = false;
+                PUFireThrowerTimer = 0;
+                EffectsManager.Instance.StopFireThrower();
+            }
         }
         if (HandleInputs)
         {
@@ -97,17 +97,11 @@ public class ShipBulletsController : MonoBehaviour
             //            AudioManager.Instance.playSoundEfect("CannonShot");
             //            GameManager.Instance.DescreseAmuntion(1);
             //            GetComponentInChildren<SpawnBullet>().SpawnBulletToPosition( typeBulletLocal, pos, "BulletShootPlayer",true);
-
             //        }
-
             //    }
             //}
-
-
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
-
                 powerShoot = 0.5f;
             }
             if (Input.GetKey(KeyCode.Space))
@@ -123,10 +117,6 @@ public class ShipBulletsController : MonoBehaviour
                 AudioManager.Instance.playSoundEfect("CannonShot");
                 GameManager.Instance.DescreseAmuntion(1);
             }
-
-
-            //if (ShipController.CharacterParameters.typeShip == typeShip.Europe)
-            //{
             if (CanShootNumBullets(3))
             {
                 if (Input.GetKeyDown(KeyCode.J))
@@ -146,51 +136,60 @@ public class ShipBulletsController : MonoBehaviour
                     GameManager.Instance.DescreseAmuntion(3);
                 }
             }
-
-            //    if (powerUpFireActive)
-            if(false)
+            if (powerUpFireThrowerActive)
             {
-                if (Input.GetKeyDown(KeyCode.J))
-                {
-                    //AudioManager.Instance.PlaySound("StartFireThrower", transform.position);
-                }
-                if (Input.GetKeyUp(KeyCode.J))
-                {
-                    //  AudioManager.Instance.FireThrowerAudioEnd();
-                }
-                if (Input.GetKey(KeyCode.J))
-                {
-                    EffectsManager.Instance.StartFireThrower();
-                    AudioManager.Instance.FireThrowerAudioCenter();
-                }
-                else
-                {
-                    EffectsManager.Instance.StopFireThrower();
-
-                }
+                //if (Input.GetKeyDown(KeyCode.F))
+                //{
+                //    AudioManager.Instance.playSoundEfect("StartFireThrower");
+                //    AudioManager.Instance.FireThrowerAudioCenter();
+                //}
+                //if (Input.GetKeyUp(KeyCode.F))
+                //{
+                //    AudioManager.Instance.FireThrowerAudioEnd();
+                   
+                //    AudioManager.Instance.playSoundEfect("EndFireThrower");
+                //}
+                //if (Input.GetKey(KeyCode.F))
+                //{
+                    EffectsManager.Instance.StartFireThrower(); 
+                //}
+                //else
+                //    EffectsManager.Instance.StopFireThrower();
             }
         }
         // si te powerup carrega
-        if(false)
+        if(PowerUpBigCharger)
         {
-           // if (Input.GetKeyDown(KeyCode.J))
-            //    {
-            //        SpeedTimer = SpeedTimerTotal + Time.deltaTime;
-            //        ShipController.CharacterParameters.currentVelocityForwards = 2.0f;
-            //        if (SpeedTimerTotal > 3.0f)
-            //        {
-            //            //   AudioManager.Instance.GritoVikingo();
-            //            ShipController.CharacterParameters.currentVelocityForwards = ShipController.Decelerate(ShipController.CharacterParameters.currentVelocityForwards);
-            //        }
-            //    }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                SpeedTimer = SpeedTimerTotal + Time.deltaTime;
+                if (!ShipController.ControllerState.isCollidingFront)
+                {
+                    ShipController.RB.AddForce(transform.forward * 1500f, ForceMode.Acceleration);
+                    StartCoroutine("Wait");// ShipController.CharacterParameters.currentVelocityForwards = 2.0f;
+                }
+            }
         }
      
     }
+    IEnumerator Wait()
+    {
+        yield return new WaitForSecondsRealtime(0.5f);
+        PowerUpBigCharger = false;
+    }
+    
     public bool CanShootNumBullets(int num)
     {
         if (ShipController.amunnition < num)
             return false;
         return true;
     }
-
+    public void SetBigChargerShip()
+    {
+        PowerUpBigCharger = true;
+    }
+    void OnTriggerEnter(Collider col)
+    {
+        Debug.Log("ssssssssssssssssssss");
+    }
 }

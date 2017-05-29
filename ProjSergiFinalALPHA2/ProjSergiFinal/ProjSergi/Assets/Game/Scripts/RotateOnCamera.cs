@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class RotateOnCamera : MonoBehaviour {
-    public GameObject Camera;
-    public RectTransform TransformR;
+    GameObject Camera;
+     RectTransform TransformR;
 	// Use this for initialization
 	void Start () {
-        Camera = Camera.GetComponent<Camera>().gameObject;
+        Camera = GameObject.FindGameObjectWithTag("MainCamera");
+      //  Camera = Camera.GetComponent<Camera>().gameObject;
         TransformR = GetComponent<RectTransform>();
 	}
 	

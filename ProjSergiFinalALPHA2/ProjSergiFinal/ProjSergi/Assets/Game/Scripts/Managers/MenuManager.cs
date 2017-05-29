@@ -9,7 +9,7 @@ public class MenuManager : MonoBehaviour
     {
         MainMenuHolder.SetActive(true);
         OptionsMenuHolder.SetActive(false);
-        TitleMenu.text = "Menu Options";
+        TitleMenu.text = "Menu Main";
     }
     void Awake()
     {
@@ -38,11 +38,11 @@ public class MenuManager : MonoBehaviour
     {
         MainMenuHolder.SetActive(true);
         OptionsMenuHolder.SetActive(false);
-        TitleMenu.text = "Menu Options";
+        TitleMenu.text = "Main Menu";
     }
     public void OptionsMenu()
     {
-        TitleMenu.text = "Main Menu";
+        TitleMenu.text = "Options Menu";
         MainMenuHolder.SetActive(false);
         OptionsMenuHolder.SetActive(true);
     }

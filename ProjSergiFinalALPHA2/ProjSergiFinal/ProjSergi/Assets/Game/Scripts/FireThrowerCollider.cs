@@ -19,5 +19,10 @@ public class FireThrowerCollider : MonoBehaviour {
         {
             other.GetComponent<EnemyController>().TakeDamage(1);
         }
+        if(other.gameObject.tag=="Ship")
+        {
+            other.GetComponent<ShipController>().TakeDamage(2);
+        }
     }
+  
 }

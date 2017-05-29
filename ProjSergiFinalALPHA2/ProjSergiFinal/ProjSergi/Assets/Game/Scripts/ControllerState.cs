@@ -1,6 +1,8 @@
 ﻿using System;
-[Serializable]
+using UnityEngine;
+[System.Serializable]
 public class ControllerState{ 
+    [SerializeField]
     public bool isCollidingFront { get; set; }
     public bool isCollidingBack { get; set; }
     public bool isCollidingLeft { get; set; }

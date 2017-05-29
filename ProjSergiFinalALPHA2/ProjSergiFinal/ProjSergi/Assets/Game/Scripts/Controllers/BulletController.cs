@@ -38,66 +38,6 @@ public class BulletController : MonoBehaviour
     {
      //   if()
     }
-    public void ApplyStartVelocity(Vector3 startVelocity)
-    {
-
-        RB.isKinematic = false;
-
-        RB.AddForce(Vector3.right * startVelocity.x, ForceMode.VelocityChange);
-        RB.AddForce(Vector3.up * startVelocity.y, ForceMode.VelocityChange);
-        RB.AddForce(Vector3.forward * startVelocity.z, ForceMode.VelocityChange);
-
-    }
-
-    public void ApplyThrust(Transform target)
-    {
-
-        float X;
-        float Y;
-        float Z;
-        float X0;
-        float Y0;
-        float Z0;
-        float V0x;
-        float V0y;
-        float V0z;
-        float t;
-
-
-        RB.isKinematic = false;
-
-        Vector3 forceDirection = target.position - transform.position;
-
-        X = forceDirection.x;       // Distance to travel along X : Space traveled @ time t
-        Y = forceDirection.y;       // Distance to travel along Y : Space traveled @ time t
-        Z = forceDirection.z;       // Distance to travel along Z : Space traveled @ time t
-
-        // As we calculate in this very moment the distance between the shot object and the target, the intial space coordinates X0, Y0, Z0 will be always 0.
-        X0 = 0;
-        Y0 = 0;
-        Z0 = 0;
-
-        transform.parent = null;        // Detach the shot object from parent in order to get its own velocity
-
-        t = _time;
-
-        // Calculation of the required velocity along each axis to hit the target from the current starting position as if the shot object were stopped 
-        V0x = (X - X0) / t;
-        V0z = (Z - Z0) / t;
-        V0y = (Y - Y0 + (0.5f * Mathf.Abs(Physics.gravity.magnitude) * Mathf.Pow(t, 2))) / t;
-
-        /* Subtraction of the current velocity of the shot object */
-        V0x -= RB.velocity.x;
-        V0y -= RB.velocity.y;
-        V0z -= RB.velocity.z;
-
-        RB.AddForce(Vector3.right * V0x, ForceMode.VelocityChange); // VelocityChange Add an instant velocity change to the rigidbody, applying an impulsive force, ignoring its mass.
-        RB.AddForce(Vector3.up * V0y, ForceMode.VelocityChange);
-        RB.AddForce(Vector3.forward * V0z, ForceMode.VelocityChange);
-
-     
-
-    }
     public void SetTypeBullet(TypeBullet type)
     {
         bulletType = type;
@@ -146,6 +86,7 @@ public class BulletController : MonoBehaviour
     }
     void OnTriggerEnter(Collider col)
     {
+        Debug.Log("sssaaaaa" + col.gameObject.name);
         if (col.gameObject.tag == "Enemy" || col.gameObject.tag == "Ship")
         {
             AudioManager.Instance.playSoundEfect("ExplosionBullet");
@@ -154,15 +95,34 @@ public class BulletController : MonoBehaviour
         if (col.gameObject.tag == "Ship")
         {
             if (bulletType == TypeBullet.Normal)  
-                GameManager.Instance.Ship.GetComponent<ShipController>().TakeDamage(9);
+                col.gameObject.GetComponent<ShipController>().TakeDamage(5);
             if (bulletType == TypeBullet.Fire)  
-                GameManager.Instance.Ship.GetComponent<ShipController>().TakeDamage(5);
+                col.gameObject.GetComponent<ShipController>().TakeDamage(9);
             Destroy(gameObject);
         }
         if(col.gameObject.tag=="Enemy")
         {
-
-            col.gameObject.GetComponent<EnemyController>().TakeDamage(4);
+           
+            
+            if (bulletType == TypeBullet.Normal)
+                col.gameObject.GetComponent<EnemyController>().TakeDamage(5);
+            if (bulletType == TypeBullet.Fire)
+                col.gameObject.GetComponent<EnemyController>().TakeDamage(9);
+            Destroy(gameObject);
+           // col.gameObject.GetComponent<EnemyController>().TakeDamage(5);
+        }
+        if (col.gameObject.tag == "Turret")
+        {
+            if(col.gameObject.GetComponent<TurretController>().CanReciveDamage)
+            {
+                AudioManager.Instance.playSoundEfect("ExplosionBullet");
+                EffectsManager.Instance.CreateStartFireExplosion(transform.position, transform.rotation, 2f);
+                if (bulletType==TypeBullet.Normal)
+                col.gameObject.GetComponent < TurretController>().TakeDamage(2);
+                if(bulletType==TypeBullet.Fire)
+                    col.gameObject.GetComponent<TurretController>().TakeDamage(5);
+            }
+            Destroy(gameObject);
         }
         if (col.gameObject.tag == "Water")
         {
@@ -177,9 +137,14 @@ public class BulletController : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public void ShootBulletToPosition(Transform pos, Quaternion rotation)
+    public void ShootForceToPosition(Vector3 target,Vector3 position,float forceAmount)
     {
-       // FireToPosition(pos.position, rotation);
+        GetComponent<Rigidbody>().mass = 5f;
+       // GetComponent<Rigidbody>().useGravity = false;
+       // GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
+        GetComponent<Rigidbody>().AddForce((new Vector3(target.x,target.y,target.z) - position).normalized * forceAmount * Time.smoothDeltaTime,ForceMode.Impulse);
+       
+
     }
     IEnumerator SimulateProjectile(Vector3 tarjet,Quaternion rotationBullet,bool isShootShip)
     {
@@ -238,9 +203,7 @@ public class BulletController : MonoBehaviour
         EffectsManager.Instance.CreateStartSmokeShoot(transform.position, transform.rotation, 1.0f);
         if (bulletType == TypeBullet.Fire)
             EffectsManager.Instance.CreateStartBulletOnFire(gameObject, transform.position, transform.rotation, dist, 5f);
-        GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse);
-       
-       
+        GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse);     
         
     }
     //public void ShootBulletToPosicionForce(Vector3 target,Vector3 origin,float force)

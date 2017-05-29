@@ -1,52 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-    public class FireThrowerEffect : MonoBehaviour {
-    private AudioSource AS;
+public class FireThrowerEffect : MonoBehaviour
+{
     public ParticleSystem[] particles;
-        public bool start;
-        // Use this for initialization
-        void Start() {
-            start = false;
+    public bool start;
+    // Use this for initialization
+    void Start()
+    {
         particles = gameObject.GetComponentsInChildren<ParticleSystem>();
-        }
-        public void StartFireEffect()
+    }
+    public void StartFireEffect()
+    {
+        start = true;
+        foreach (ParticleSystem p in particles)
         {
-            start = true;
-            foreach (ParticleSystem p in particles) {
-                p.Play();
-            }
-            transform.GetChild(2).gameObject.SetActive(true);
-            transform.GetChild(2).GetComponent<BoxCollider>().enabled = true;
+            p.Play();
+            Debug.Log(p+"pp");
         }
-        public void Stop()
+       
+        transform.GetChild(1).gameObject.SetActive(true);
+        transform.GetChild(1).GetComponent<BoxCollider>().enabled = true;
+    }
+    public void Stop()
+    {
+        start = false;
+        foreach (ParticleSystem p in particles)
         {
-            start = false;
+            p.Stop();
+        }
+        transform.GetChild(1).gameObject.SetActive(false);
+        transform.GetChild(1).GetComponent<BoxCollider>().enabled = false;
+
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        if (start)
+        {
             foreach (ParticleSystem p in particles)
             {
-                p.Stop();
+                ParticleSystem.EmissionModule ParticleEm = p.emission;
+                ParticleEm.enabled = true;
             }
-            transform.GetChild(2).gameObject.SetActive(false);
-            transform.GetChild(2).GetComponent<BoxCollider>().enabled=false;
         }
-        // Update is called once per frame
-        void Update() {
-            if (start)
+        else
+        {
+            foreach (ParticleSystem p in particles)
             {
-                foreach (ParticleSystem p in particles)
-                {
-                    ParticleSystem.EmissionModule ParticleEm = p.emission;
-                    ParticleEm.enabled = true;   
-                }
-            }
-            else
-            {
-                foreach (ParticleSystem p in particles)
-                {
-                    ParticleSystem.EmissionModule ParticleEm = p.emission;
-                    ParticleEm.enabled = false;
-                }
+                ParticleSystem.EmissionModule ParticleEm = p.emission;
+                ParticleEm.enabled = false;
             }
         }
     }
+}
 

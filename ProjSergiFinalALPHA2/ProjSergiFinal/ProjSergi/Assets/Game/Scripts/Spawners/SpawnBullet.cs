@@ -57,8 +57,9 @@ public class SpawnBullet : MonoBehaviour {
         GameObject bulletobj = Instantiate(bullet, transform.position, transform.rotation);
         bulletobj.GetComponent<BulletController>().SetTypeBullet(type);
         bulletobj.layer=LayerMask.NameToLayer(Layer);
-       // bulletobj.GetComponent<BulletController>().ShootBulletToPosicionForce(tarjet, transform.position, 400f);
-        bulletobj.GetComponent<BulletController>().FireToPosition(tarjet, transform.rotation,isShootShip,velocity);
+        // bulletobj.GetComponent<BulletController>().ShootBulletToPosicionForce(tarjet, transform.position, 400f);
+        bulletobj.GetComponent<BulletController>().ShootForceToPosition(new Vector3(tarjet.x,tarjet.y+.1f,tarjet.z), transform.position,5000f);
+       // bulletobj.GetComponent<BulletController>().FireToPosition(tarjet, transform.rotation,isShootShip,velocity);
     }
 }
 

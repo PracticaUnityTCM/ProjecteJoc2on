@@ -7,7 +7,7 @@ public class AudioManager : MonoBehaviour
 {
     public enum AudioChannel { Master, Sfx, Music };
     public float masterVolumePercent= 0.5f;
-    public float sfxVolumePercent= 0.25f;
+    public float sfxVolumePercent= 0.5f;
     public float musicVolumePercent = 0.5f;
 
     AudioSource sfx2DSource, sfxLoopASource;//sfxMenuAudioSource;
@@ -65,6 +65,7 @@ public class AudioManager : MonoBehaviour
                     musicSources[i] = newMusicSource.AddComponent<AudioSource>();
                     newMusicSource.transform.parent = transform;
                     musicSources[i].loop=true;
+                    musicSources[i].playOnAwake = false;
                     musicSources[i].outputAudioMixerGroup = MusicMixer;
                     musicSources[i].volume = 0.5f;
                 }
@@ -73,16 +74,15 @@ public class AudioManager : MonoBehaviour
                 sfx2DSource.outputAudioMixerGroup = SFXMixer;
                 newSfx2Dsource.transform.parent = transform;
                 sfx2DSource.volume = 0.5f;
-
-              
                 sfx2DSource.playOnAwake = false;
-                //GameObject  newSfxLoopSource = new GameObject("sfx SourceLoop");
-                //sfxLoopASource = newSfxLoopSource.AddComponent<AudioSource>();
-                //newSfxLoopSource.transform.parent = transform;
-                //sfxLoopASource.volume = 1f;
-                //sfxLoopASource.loop = true;
-                //sfxLoopASource.playOnAwake = false;
-                //sfxLoopASource.outputAudioMixerGroup = SFXMixer;
+                GameObject newSfxLoopSource = new GameObject("sfx SourceLoop");
+                sfxLoopASource = newSfxLoopSource.AddComponent<AudioSource>();
+                newSfxLoopSource.transform.parent = transform;
+                sfxLoopASource.outputAudioMixerGroup = SFXMixer;
+                sfxLoopASource.volume = 0.5f;
+                sfxLoopASource.loop = true;
+                sfxLoopASource.playOnAwake = true;
+                
                 //GameObject newSfxMenuSource = new GameObject("sfx SourceMenu");
                 //sfxMenuAudioSource = newSfxMenuSource.AddComponent<AudioSource>();
                 //newSfxMenuSource.transform.parent = transform;
@@ -99,8 +99,7 @@ public class AudioManager : MonoBehaviour
                 }
              
                 masterVolumePercent = PlayerPrefs.GetFloat("master vol", 0.5f);
-                sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", 0.25f);
-                Debug.Log(sfxVolumePercent + "s");
+                sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", 0.5f);
                 musicVolumePercent = PlayerPrefs.GetFloat("music vol", 0.5f);
                 MusicMixer.audioMixer.SetFloat("Attenuation",musicVolumePercent);
                 SFXMixer.audioMixer.SetFloat("Attenuation", sfxVolumePercent);
@@ -143,10 +142,11 @@ public class AudioManager : MonoBehaviour
                musicVolumePercent = volumePercent;
                 break;
         }
-     
+        if(musicSources[0].isPlaying)
         musicSources[0].volume = musicVolumePercent * masterVolumePercent;
+        else
         musicSources[1].volume = musicVolumePercent * masterVolumePercent;
-        Debug.Log(sfxVolumePercent + "ssf");
+
         PlayerPrefs.SetFloat("master vol", masterVolumePercent);
         PlayerPrefs.SetFloat("sfx vol", sfxVolumePercent);
         PlayerPrefs.SetFloat("music vol", musicVolumePercent);
@@ -169,7 +169,7 @@ public class AudioManager : MonoBehaviour
     public void playSoundEfect(string name)
     {
         //  AudioSource.PlayClipAtPoint(library.GetClipFromName(name), new Vector3(0, 0, 0));
-        Debug.Log(sfxVolumePercent * masterVolumePercent + "VOLUM");
+    
             sfx2DSource.PlayOneShot(library.GetClipFromName(name));
     }
     //public void PlaySound(string soundName, Vector3 pos)
@@ -193,13 +193,11 @@ public class AudioManager : MonoBehaviour
            
             sfx2DSource.PlayOneShot(library.GetClipFromName("StartFireThrower"));
             startPress = true;
-           // StartCoroutine(WaitFor(6f));
         }
-       
     }
-    
     public void FireThrowerAudioCenter()
-    {   
+    {
+        StartCoroutine(WaitFor(library.GetClipFromName("StartFireThrower").length));
         sfxLoopASource.clip = library.GetClipFromName("CenterFireThrower");
         sfxLoopASource.Play();
     }

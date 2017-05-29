@@ -58,8 +58,8 @@ public class MusicManager : MonoBehaviour
         if (clipToPlay != null)
         {
             Debug.Log(AudioManager.Instance);
-            AudioManager.Instance.PlayMusic(clipToPlay, 2);
-            Invoke("PlayMusic", clipToPlay.length);
+            AudioManager.Instance.PlayMusic(clipToPlay,2);
+           // Invoke("PlayMusic", clipToPlay.length);
         }
 
     }

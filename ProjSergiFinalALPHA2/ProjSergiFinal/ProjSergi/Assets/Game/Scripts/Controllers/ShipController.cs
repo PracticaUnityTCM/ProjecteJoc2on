@@ -13,9 +13,10 @@ public enum StateMoving
 public class ShipController : MonoBehaviour
 {
     // Controller State from the Ship
+    
     public ControllerState ControllerState;
     // Charater Parameters from the Ship
-    Rigidbody RB;
+   public Rigidbody RB;
     public CharacterParameters CharacterParameters;
     public int amunnition;
     private ShipBulletsController ShipBullets;
@@ -26,11 +27,15 @@ public class ShipController : MonoBehaviour
     public Transform SinkingDir;
     public StateMoving stateMoving=StateMoving.NoMove;
     public bool IsDeath;
+    Transform cam;
     public void RespawnAt(Transform spawnPoint   )
     {
         RB = GetComponent<Rigidbody>();
+        cam = GameObject.Find("Main Camera").GetComponent<Transform>(); 
+        cam.transform.position = new Vector3(cam.transform.position.x,cam.transform.position.y, cam.transform.position.z - 15f);
         transform.rotation = Quaternion.identity;
         Health = MaxHealth;
+      EffectsManager.Instance.UpdateDamage(transform.name, Health, true, EnemyShipBehaivour.Following);
         amunnition = maxAmunition;
         IsDeath = false;
         GetComponent<ShipBulletsController>().HandleInputs = true;
@@ -70,12 +75,10 @@ public class ShipController : MonoBehaviour
         RB = GetComponent<Rigidbody>();
         ControllerState = new ControllerState();
         Transform s = Helpers.Helpers.FindDeepChild(transform, "SpawnBulletFront");
-        EffectsManager.Instance.CreateFireThrower(gameObject, s.position, s.rotation);
-
+        EffectsManager.Instance.CreateFireThrowerShip(gameObject, s.position, s.rotation,"FireLayerPlayer");
         Transform TransSmoke = Helpers.Helpers.FindDeepChild(transform, "SpawnEffects");
         EffectsManager.Instance.CreateSmokeDamage(gameObject,TransSmoke.position, TransSmoke.rotation,transform.name);
-        EffectsManager.Instance.CreateTrailBoat(gameObject, TransSmoke.position, TransSmoke.rotation);
-        EffectsManager.Instance.CreateMistBoat(gameObject, TransSmoke.position, TransSmoke.rotation);
+        EffectsManager.Instance.CreateTrailMistBoat(gameObject, TransSmoke.position, TransSmoke.rotation,transform.name);
     }
     void Awake()
     {
@@ -88,29 +91,20 @@ public class ShipController : MonoBehaviour
        // StartCoroutine(BalancingAnimation(1));
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene("Menu",LoadSceneMode.Single);
         }
           stateMoving = StateMoving.NoMove;
         if (HandleCollisions)
         {
             if (!IsDeath)
             {
-                //if (CharacterParameters.currentVelocityForwards > 0.0f)
-                //{
-
-                //    EffectsManager.Instance.UpdateTrailBoat(-CharacterParameters.currentVelocityForwards);
-                //}
-                //else if (CharacterParameters.currentVelocityBackwards > 0.0f)
-                //{
-                //    EffectsManager.Instance.UpdateTrailBoat(CharacterParameters.currentVelocityBackwards);
-                //}
-                if(CharacterParameters.currentVelocityBackwards>0.0f)
+                 if(CharacterParameters.currentVelocityBackwards>0.0f)
                 {
-                    EffectsManager.Instance.UpdateMistBoatEffect(CharacterParameters.currentVelocityBackwards);
+                    EffectsManager.Instance.UpdateTrailMistBoat(-CharacterParameters.currentVelocityBackwards,transform.name);
                 }
                 if(CharacterParameters.currentVelocityForwards>0.0f)
                 {
-                    EffectsManager.Instance.UpdateMistBoatEffect(-CharacterParameters.currentVelocityBackwards);
+                    EffectsManager.Instance.UpdateTrailMistBoat(CharacterParameters.currentVelocityForwards,transform.name);
                 }
                 EffectsManager.Instance.UpdateDamage(transform.name,Health,true,EnemyShipBehaivour.Following);
                 Backwards();
@@ -127,7 +121,7 @@ public class ShipController : MonoBehaviour
     void OnTriggerEnter(Collider collision)
     {
         // if collider tag is "Wall"
-        if (collision.gameObject.tag == "Wall" )
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag=="Turret" || collision.gameObject.tag=="Enemy" )
         {
 
             // if is moving Forwads
@@ -137,6 +131,7 @@ public class ShipController : MonoBehaviour
                 CharacterParameters.currentVelocityForwards = 0.0f;
                 // set true is colliding front var
                 ControllerState.isCollidingFront = true;
+                Debug.Log(ControllerState.isCollidingFront);
             }
             // if is moving backwards
             if(CharacterParameters.currentVelocityBackwards>0.0f)
@@ -149,10 +144,32 @@ public class ShipController : MonoBehaviour
         }
     }
     // on trigger exit 
+    //void OnTriggerStay(Collider collider)
+    //{
+    //    if (collider.gameObject.tag == "Wall" || collider.gameObject.tag == "Turret" || collider.gameObject.tag == "Enemy")
+    //    {
+
+    //        if (CharacterParameters.currentVelocityForwards > 0.0f)
+    //    {
+    //        // put current velocity forwards to 0.0f
+    //        CharacterParameters.currentVelocityForwards = 0.0f;
+    //        // set true is colliding front var
+    //        ControllerState.isCollidingFront = true;
+    //    }
+    //        // if is moving backwards
+    //        if (CharacterParameters.currentVelocityBackwards > 0.0f)
+    //        {
+    //            // put current velocity Backwards to 0.0f
+    //            CharacterParameters.currentVelocityBackwards = 0.0f;
+    //            // set true is colliding back var  
+    //            ControllerState.isCollidingBack = true;
+    //        }
+    //    }
+    //}
     void OnTriggerExit(Collider collider)
-    {
+    {   
         // if collider has tag is "Wall"
-       if( collider.gameObject.tag=="Wall" )
+       if( collider.gameObject.tag=="Wall" || collider.gameObject.tag == "Turret" || collider.gameObject.tag == "Enemy")
         {
             // reset all vars from CollidersState 
             ControllerState.Reset();
@@ -236,6 +253,6 @@ public class ShipController : MonoBehaviour
         
         //transform.rotation=Quaternion.Slerp(transform.rotation,transform.rotation*Quaternion.Euler(50f,50f,50f),Time.deltaTime*5f);
     }
-        
+   
 }
 
