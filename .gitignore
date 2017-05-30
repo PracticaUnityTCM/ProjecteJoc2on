@@ -44,3 +44,5 @@ ios.app
  # Builds
 *.apk
 *.unitypackage
+*.rar
+*.zip
